@@ -17,7 +17,7 @@ class AboutScreen extends StatelessWidget {
             iconColor: Colors.blueAccent,
           ),
 
-          const SizedBox(height: 12,),
+          const SizedBox(height: 12),
           _buildInfoTile(
             title: "Version",
             subtitle: "1.0.0",
@@ -27,7 +27,7 @@ class AboutScreen extends StatelessWidget {
 
           const SizedBox(height: 32),
 
-          _buildSectionHeader("Team", ),
+          _buildSectionHeader("Team"),
           _buildInfoTile(
             title: "Developed by",
             subtitle: "Useless8000B",
@@ -36,14 +36,12 @@ class AboutScreen extends StatelessWidget {
           ),
           const SizedBox(height: 32),
 
-          _buildSectionHeader("Description", ),
+          _buildSectionHeader("Description"),
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: Text(
               "Health is designed to help you manage your health records efficiently, ensuring you and your loved ones are always up-to-date.",
-              style: TextStyle(
-                fontSize: 14,
-              ),
+              style: TextStyle(fontSize: 14),
             ),
           ),
         ],
@@ -56,15 +54,12 @@ class AboutScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16, left: 4),
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }
 
-  Widget _buildInfoTile( {
+  Widget _buildInfoTile({
     required String title,
     required String subtitle,
     required IconData icon,
@@ -74,12 +69,13 @@ class AboutScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
+        color: Color(0xF724262C),
       ),
       child: Row(
         children: [
           _buildIconBubble(icon, iconColor),
           const SizedBox(width: 16),
-          Expanded(child: _buildTileText(title, subtitle, )),
+          Expanded(child: _buildTileText(title, subtitle)),
         ],
       ),
     );
@@ -103,18 +99,10 @@ class AboutScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 2),
-        Text(
-          subtitle,
-          style: TextStyle(
-            fontSize: 12,
-          ),
-        ),
+        Text(subtitle, style: TextStyle(fontSize: 12)),
       ],
     );
   }
