@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:health/colors.dart';
+import 'package:health/services/auth_services.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -9,10 +11,12 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _faceIdEnabled = false;
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         children: [
@@ -57,6 +61,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
             icon: Icons.lock_outline,
             iconColor: Colors.grey,
           ),
+
+          const SizedBox(height: 32),
+
+          _buildSectionHeader("Login"),
+          GestureDetector(
+            onTap: () async {
+              await _authService.signOut();
+            },
+            child: _buildSettingsTile(
+              title: "Sign Out",
+              subtitle: "Logout from your account safely",
+              icon: Icons.logout_rounded,
+              iconColor: AppColors.quaternary,
+            ),
+          ),
+          const SizedBox(height: 40),
         ],
       ),
     );
@@ -67,7 +87,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.only(bottom: 16, left: 4),
       child: Text(
         title,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          fontSize: 18, 
+          fontWeight: FontWeight.bold,
+          color: AppColors.white,
+        ),
       ),
     );
   }
@@ -80,13 +104,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Color(0xF724262C)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20), 
+        color: AppColors.cardDark,
+      ),
       child: Row(
         children: [
           _buildIconBubble(icon, iconColor),
           const SizedBox(width: 16),
           Expanded(child: _buildTileText(title, subtitle)),
-          Icon(Icons.arrow_forward_ios, size: 14),
+          const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white24),
         ],
       ),
     );
@@ -104,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Color(0xF724262C)
+        color: AppColors.cardDark,
       ),
       child: Row(
         children: [
@@ -140,9 +167,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
+            color: AppColors.white,
           ),
         ),
         const SizedBox(height: 2),
@@ -150,6 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           subtitle,
           style: TextStyle(
             fontSize: 12,
+            color: AppColors.white.withValues(alpha: 0.6),
           ),
         ),
       ],
