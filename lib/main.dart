@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health/colors.dart';
 import 'package:health/screens/shell_screen.dart';
 
 void main() {
@@ -15,15 +16,15 @@ class Health extends StatelessWidget {
       title: 'Health',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: AppColors.primary,
           brightness: Brightness.dark
         ),
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: Color(0xFF181A20),
+        scaffoldBackgroundColor: AppColors.background,
         appBarTheme: AppBarThemeData(
-          backgroundColor: Color(0xFF181A20),
+          backgroundColor: AppColors.background,
           titleTextStyle: TextStyle(
-            color: Colors.white,
+            color: AppColors.white,
             fontSize: 24,
             fontWeight: FontWeight.w500
           )
