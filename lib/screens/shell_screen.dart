@@ -17,7 +17,7 @@ class ShellScreen extends StatefulWidget {
 class _ShellScreenState extends State<ShellScreen> {
   int currentIndex = 0;
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages = [
     ServicesScreen(),
     ScheduleExamScreen(),
     ScheduledExamsScreen(),
@@ -38,10 +38,7 @@ class _ShellScreenState extends State<ShellScreen> {
       appBar: AppbarWidget(),
       drawer: DrawerNavigator(currentIndex: currentIndex, onTap: navigate),
       body: SafeArea(
-        child: IndexedStack(
-          index: currentIndex,
-          children: _pages,
-        ),
+        child: IndexedStack(index: currentIndex, children: _pages),
       ),
     );
   }
