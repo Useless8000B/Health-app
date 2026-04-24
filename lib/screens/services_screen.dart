@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health/colors.dart';
 
 class ServicesScreen extends StatelessWidget {
   const ServicesScreen({super.key});
@@ -129,19 +130,19 @@ class ServicesScreen extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           _buildCategoryCard(
-            color: const Color(0xFF00C569),
+            color: AppColors.secondary,
             icon: Icons.local_pharmacy,
             title: "Chemist &\nDrugist",
           ),
           const SizedBox(width: 12),
           _buildCategoryCard(
-            color: const Color(0xFF7A54FF),
+            color: AppColors.tertiary,
             icon: Icons.biotech,
             title: "General\nSurgeon",
           ),
           const SizedBox(width: 12),
           _buildCategoryCard(
-            color: const Color(0xFFFF5252),
+            color: AppColors.quaternary,
             icon: Icons.emergency,
             title: "Emergency\nUnit",
           ),
