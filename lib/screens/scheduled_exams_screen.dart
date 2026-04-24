@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/exam_model.dart';
 import '../colors.dart';
+import '../services/api_service.dart';
 
 class ScheduledExamsScreen extends StatefulWidget {
   const ScheduledExamsScreen({super.key});
@@ -11,92 +12,69 @@ class ScheduledExamsScreen extends StatefulWidget {
 }
 
 class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
-  late List<ExamRecord> allExams;
+  final ApiService apiService = ApiService();
+  late Future<List<ExamRecord>> examsFuture;
 
   @override
   void initState() {
     super.initState();
-    DateTime now = DateTime.now();
-    allExams = [
-      ExamRecord(
-        examType: "General Checkup",
-        examLocation: "Central Hospital - Room 300",
-        examDate: DateFormat("MMM d").format(now.add(const Duration(days: 2))),
-        examTime: "09:00",
-      ),
-      ExamRecord(
-        examType: "Blood Test",
-        examLocation: "Lab Corp",
-        examDate: DateFormat("MMM d").format(now.add(const Duration(days: 5))),
-        examTime: "14:30",
-      ),
-      ExamRecord(
-        examType: "X-Ray",
-        examLocation: "Imaging Center",
-        examDate: DateFormat("MMM d").format(now.subtract(const Duration(days: 3))),
-        examTime: "11:15",
-      ),
-    ];
+    examsFuture = apiService.getExams();
   }
 
-  bool _isPast(String dateStr, String timeStr) {
-    try {
-      DateFormat format = DateFormat("MMM d HH:mm");
-      DateTime parsedDate = format.parse("$dateStr $timeStr");
-
-      DateTime now = DateTime.now();
-      DateTime examDateTime = DateTime(
-        now.year,
-        parsedDate.month,
-        parsedDate.day,
-        parsedDate.hour,
-        parsedDate.minute,
-      );
-
-      return examDateTime.isBefore(now);
-    } catch (e) {
-      return false;
-    }
+  bool _isPast(DateTime examDateTime) {
+    return examDateTime.isBefore(DateTime.now());
   }
 
   @override
   Widget build(BuildContext context) {
-    final upcomingExams = allExams.where((e) => !_isPast(e.examDate, e.examTime)).toList();
-    final pastExams = allExams.where((e) => _isPast(e.examDate, e.examTime)).toList();
-
     return Scaffold(
-      body: allExams.isEmpty
-          ? const Center(child: Text("No exams scheduled"))
-          : ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              children: [
-                if (upcomingExams.isNotEmpty) ...[
-                  _buildSectionHeader("UPCOMING EXAMS"),
-                  const SizedBox(height: 10),
-                  ...upcomingExams.map(
-                    (exam) => _buildExamBubble(
-                      title: exam.examType,
-                      subtitle: exam.examLocation,
-                      time: "${exam.examDate}, ${exam.examTime}",
-                      isPast: false,
-                    ),
+      body: FutureBuilder<List<ExamRecord>>(
+        future: examsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("No exams scheduled"));
+          }
+
+          final allExams = snapshot.data!;
+          final upcomingExams = allExams.where((e) => !_isPast(e.examDateTime)).toList();
+          final pastExams = allExams.where((e) => _isPast(e.examDateTime)).toList();
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            children: [
+              if (upcomingExams.isNotEmpty) ...[
+                _buildSectionHeader("UPCOMING EXAMS"),
+                const SizedBox(height: 10),
+                ...upcomingExams.map(
+                  (exam) => _buildExamBubble(
+                    title: exam.examType,
+                    subtitle: exam.examLocation,
+                    time: "${DateFormat("MMM d").format(exam.examDateTime)}, ${DateFormat("HH:mm").format(exam.examDateTime)}",
+                    isPast: false,
                   ),
-                ],
-                if (pastExams.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  _buildSectionHeader("PAST EXAMS"),
-                  const SizedBox(height: 10),
-                  ...pastExams.map(
-                    (exam) => _buildExamBubble(
-                      title: exam.examType,
-                      subtitle: exam.examLocation,
-                      time: "${exam.examDate}, ${exam.examTime}",
-                      isPast: true,
-                    ),
-                  ),
-                ],
+                ),
               ],
-            ),
+              if (pastExams.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                _buildSectionHeader("PAST EXAMS"),
+                const SizedBox(height: 10),
+                ...pastExams.map(
+                  (exam) => _buildExamBubble(
+                    title: exam.examType,
+                    subtitle: exam.examLocation,
+                    time: "${DateFormat("MMM d").format(exam.examDateTime)}, ${DateFormat("HH:mm").format(exam.examDateTime)}",
+                    isPast: true,
+                  ),
+                ),
+              ],
+            ],
+          );
+        },
+      ),
     );
   }
 
