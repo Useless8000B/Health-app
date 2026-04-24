@@ -16,31 +16,33 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
   @override
   void initState() {
     super.initState();
-    // Mock data
     DateTime now = DateTime.now();
     allExams = [
       ExamRecord(
         examType: "General Checkup",
         examLocation: "Central Hospital - Room 300",
-        examDate: DateFormat("MMM d, HH:mm").format(now.add(const Duration(days: 2))),
+        examDate: DateFormat("MMM d").format(now.add(const Duration(days: 2))),
+        examTime: "09:00",
       ),
       ExamRecord(
         examType: "Blood Test",
         examLocation: "Lab Corp",
-        examDate: DateFormat("MMM d, HH:mm").format(now.add(const Duration(days: 5))),
+        examDate: DateFormat("MMM d").format(now.add(const Duration(days: 5))),
+        examTime: "14:30",
       ),
       ExamRecord(
         examType: "X-Ray",
         examLocation: "Imaging Center",
-        examDate: DateFormat("MMM d, HH:mm").format(now.subtract(const Duration(days: 3))),
+        examDate: DateFormat("MMM d").format(now.subtract(const Duration(days: 3))),
+        examTime: "11:15",
       ),
     ];
   }
 
-  bool _isPast(String dateStr) {
+  bool _isPast(String dateStr, String timeStr) {
     try {
-      DateFormat format = DateFormat("MMM d, HH:mm");
-      DateTime parsedDate = format.parse(dateStr);
+      DateFormat format = DateFormat("MMM d HH:mm");
+      DateTime parsedDate = format.parse("$dateStr $timeStr");
 
       DateTime now = DateTime.now();
       DateTime examDateTime = DateTime(
@@ -59,61 +61,36 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final upcomingExams = allExams.where((e) => !_isPast(e.examDate)).toList();
-    final pastExams = allExams.where((e) => _isPast(e.examDate)).toList();
+    final upcomingExams = allExams.where((e) => !_isPast(e.examDate, e.examTime)).toList();
+    final pastExams = allExams.where((e) => _isPast(e.examDate, e.examTime)).toList();
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.bgDark : AppColors.bgLight,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: false,
-        title: Text(
-          "Scheduled Exams",
-          style: TextStyle(
-            color: isDark ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: isDark ? Colors.white : Colors.black87,
-            size: 20,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: allExams.isEmpty
           ? const Center(child: Text("No exams scheduled"))
           : ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               children: [
                 if (upcomingExams.isNotEmpty) ...[
-                  _buildSectionHeader(isDark, "UPCOMING EXAMS"),
+                  _buildSectionHeader("UPCOMING EXAMS"),
                   const SizedBox(height: 10),
                   ...upcomingExams.map(
                     (exam) => _buildExamBubble(
-                      isDark,
                       title: exam.examType,
                       subtitle: exam.examLocation,
-                      time: exam.examDate,
+                      time: "${exam.examDate}, ${exam.examTime}",
                       isPast: false,
                     ),
                   ),
                 ],
                 if (pastExams.isNotEmpty) ...[
                   const SizedBox(height: 24),
-                  _buildSectionHeader(isDark, "PAST EXAMS"),
+                  _buildSectionHeader("PAST EXAMS"),
                   const SizedBox(height: 10),
                   ...pastExams.map(
                     (exam) => _buildExamBubble(
-                      isDark,
                       title: exam.examType,
                       subtitle: exam.examLocation,
-                      time: exam.examDate,
+                      time: "${exam.examDate}, ${exam.examTime}",
                       isPast: true,
                     ),
                   ),
@@ -123,20 +100,18 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(bool isDark, String title) {
+  Widget _buildSectionHeader(String title) {
     return Text(
       title,
       style: TextStyle(
         fontSize: 12,
         letterSpacing: 1.2,
         fontWeight: FontWeight.bold,
-        color: isDark ? Colors.white38 : Colors.black38,
       ),
     );
   }
 
-  Widget _buildExamBubble(
-    bool isDark, {
+  Widget _buildExamBubble({
     required String title,
     required String subtitle,
     required String time,
@@ -147,7 +122,7 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         child: Material(
-          color: isDark ? AppColors.cardDark : Colors.white,
+          color: AppColors.cardDark,
           borderRadius: BorderRadius.circular(24),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
@@ -158,9 +133,7 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: isDark
-                      ? Colors.white.withOpacity(0.05)
-                      : Colors.grey[200]!,
+                  color: Colors.white.withValues(alpha: 0.05)
                 ),
               ),
               child: Column(
@@ -174,7 +147,6 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
                       if (isPast)
@@ -190,7 +162,6 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 14,
-                      color: isDark ? Colors.white54 : Colors.black54,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -201,10 +172,8 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: isPast
-                          ? (isDark ? Colors.white10 : Colors.grey[100])
-                          : (isDark
-                                ? Colors.blueAccent.withOpacity(0.1)
-                                : AppColors.accentLight),
+                          ? (Colors.white10)
+                          : (Colors.blueAccent.withValues(alpha: 0.1)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -214,9 +183,7 @@ class _ScheduledExamsScreenState extends State<ScheduledExamsScreen> {
                         fontWeight: FontWeight.w700,
                         color: isPast
                             ? Colors.grey
-                            : (isDark
-                                  ? Colors.blueAccent[100]
-                                  : Colors.blueAccent[700]),
+                            : (Colors.blueAccent[100]),
                       ),
                     ),
                   ),
