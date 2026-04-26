@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../models/exam_model.dart';
+import '../widgets/custom_snackbar.dart';
 
 class ScheduleExamScreen extends StatelessWidget {
   ScheduleExamScreen({super.key});
@@ -141,9 +142,7 @@ class ScheduleExamScreen extends StatelessWidget {
                           : () async {
                               if (!_formKey.currentState!.validate()) return;
                               if (selectedDateTime.value == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Please select a date and time")),
-                                );
+                                CustomSnackBar.show(context, "Please select a date and time", isError: true);
                                 return;
                               }
 
@@ -163,22 +162,12 @@ class ScheduleExamScreen extends StatelessWidget {
                               if (!context.mounted) return;
 
                               if (success) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Successfully scheduled"),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
+                                CustomSnackBar.show(context, "Successfully scheduled");
                                 _formKey.currentState!.reset();
                                 selectedDateTime.value = null;
                                 selectedExam.value = null;
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Failed to save. Check server."),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
+                                CustomSnackBar.show(context, "Failed to save. Check server.", isError: true);
                               }
                             },
                       child: loading

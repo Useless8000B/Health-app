@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health/colors.dart';
 import 'package:health/services/auth_services.dart';
+import 'package:health/widgets/custom_snackbar.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -110,9 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final confirm = _confirmPasswordController.text.trim();
 
     if (password != confirm) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Passwords don't match!")),
-      );
+      CustomSnackBar.show(context, "Passwords don't match!", isError: true);
       return;
     }
 
@@ -120,9 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await _authService.signUp(email, password);
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      CustomSnackBar.show(context, e.toString(), isError: true);
     }
   }
 

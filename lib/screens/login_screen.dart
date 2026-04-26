@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:health/colors.dart';
 import 'package:health/screens/register_screen.dart';
 import 'package:health/services/auth_services.dart';
+import 'package:health/widgets/custom_snackbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -100,11 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         .trim();
 
                     if (emailValue.isEmpty || passwordValue.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Please fill in all fields"),
-                        ),
-                      );
+                      CustomSnackBar.show(context, "Please fill in all fields", isError: true);
                       return;
                     }
                     try {
@@ -119,13 +116,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         message = "The email address is not valid.";
                       }
 
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(message)));
+                      CustomSnackBar.show(context, message, isError: true);
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Error: ${e.toString()}")),
-                      );
+                      CustomSnackBar.show(context, "Error: ${e.toString()}", isError: true);
                     }
                   },
                   style: ElevatedButton.styleFrom(
